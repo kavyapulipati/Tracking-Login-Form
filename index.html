@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login Flow</title>
+
+<style>
+  body {
+    font-family: Arial;
+    background: #f4f4f4;
+    text-align: center;
+    margin: 0;
+  }
+
+  .container {
+    margin-top: 100px;
+  }
+
+  input, select {
+    padding: 10px;
+    margin: 10px;
+    width: 250px;
+  }
+
+  button {
+    padding: 10px 20px;
+    background: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+</style>
+
+</head>
+
+<body>
+<script type="text/javascript" src="https://d.oracleinfinity.io/infy/acs/account/jheeuuijzx/js/infinity_demo/odc.js">
+</script>
+
+<script>
+(function() {
+  function initTracking() {
+    if (typeof ORA === "undefined") {
+      setTimeout(initTracking, 500);
+      return;
+    }
+    console.log("ORA is ready. Tracking initialized.");
+    document.addEventListener("click", function(e) {
+
+      const btn = e.target.closest("button");
+      if (!btn || btn.textContent.trim() !== "Submit") return;
+
+      const userId = document.getElementById("userId")?.value;
+      const productType = document.getElementById("productType")?.value;
+
+      if (!userId || !productType) return;
+
+      console.log("CLICK TRACK:", userId, productType);
+
+      ORA.click({
+        config: { applyMutations: true, sendSessionInfo: true },
+        data: {
+          infinity_event: productType,
+          user_id: userId,
+          product_type: productType
+        }
+      });
+   });
+  }
+  initTracking();
+})();
+</script>
+<!-- FORM PAGE -->
+<div id="formPage" class="container">
+  <div class="card">
+    <h2>Login</h2>
+
+    <input type="text" id="userId" placeholder="Enter User ID"><br>
+
+    <select id="productType">
+      <option value="">Select Product Type</option>
+      <option value="Health">Health Insurance</option>
+      <option value="Travel">Travel Insurance</option>
+      <option value="Life">Life Insurance</option>
+    </select><br>
+
+    <button onclick="submitForm()">Submit</button>
+  </div>
+</div>
+
+<!-- WELCOME PAGE -->
+<div id="welcomePage" class="container" style="display:none;">
+  <div class="card">
+    <h2 id="welcomeText"></h2>
+
+    <!-- ✅ Add this image tag -->
+    <img id="welcomeImage" src="Welcome.jpg" alt="Welcome Image"
+         style="width:250px; margin:15px auto; display:none;">
+
+    <br><br>
+    <button onclick="logout()">Back</button>
+  </div>
+</div>
+<script>
+function submitForm() {
+  const userId = document.getElementById("userId").value;
+  const productType = document.getElementById("productType").value;
+
+  if (!userId || !productType) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  // Store data
+  localStorage.setItem("userId", userId);
+  localStorage.setItem("productType", productType);
+
+  showWelcome();
+}
+
+function showWelcome() {
+  const userId = localStorage.getItem("userId");
+  const productType = localStorage.getItem("productType");
+  document.getElementById("formPage").style.display = "none";
+  document.getElementById("welcomePage").style.display = "block";
+
+  document.getElementById("welcomeText").innerText =
+    "Welcome to" + " - Product: " + productType;
+  
+  document.getElementById("welcomeImage").style.display = "block";
+}
+
+
+// Back button
+function logout() {
+  document.getElementById("formPage").style.display = "block";
+  document.getElementById("welcomePage").style.display = "none";
+  document.getElementById("welcomeImage").style.display = "none";
+}
+
+// Auto load if already submitted
+window.onload = function() {
+  if (localStorage.getItem("userId")) {
+    showWelcome();
+  }
+};
+</script>
+
+</body>
+</html>
