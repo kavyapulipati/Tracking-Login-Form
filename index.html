@@ -35,14 +35,25 @@
     padding: 30px;
     border-radius: 10px;
     display: inline-block;
+    width: 90%;
+    max-width: 600px;
+  }
+
+  /* 🔥 Vertical image layout */
+  #imageContainer img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border-radius: 8px;
   }
 </style>
 
 </head>
 
 <body>
-<!-- <script type="text/javascript" src="https://d.oracleinfinity.io/infy/acs/account/jheeuuijzx/js/infinity_demo/odc.js">
-</script>
+
+<script type="text/javascript" src="https://d.oracleinfinity.io/infy/acs/account/jheeuuijzx/js/infinity_demo/odc.js"></script>
 
 <script>
 (function() {
@@ -51,7 +62,9 @@
       setTimeout(initTracking, 500);
       return;
     }
+
     console.log("ORA is ready. Tracking initialized.");
+
     document.addEventListener("click", function(e) {
 
       const btn = e.target.closest("button");
@@ -72,11 +85,12 @@
           product_type: productType
         }
       });
-   });
+    });
   }
   initTracking();
 })();
-</script> -->
+</script>
+
 <!-- FORM PAGE -->
 <div id="formPage" class="container">
   <div class="card">
@@ -100,52 +114,73 @@
   <div class="card">
     <h2 id="welcomeText"></h2>
 
-    <!-- ✅ Add this image tag -->
-    <img id="welcomeImage" src="Welcome.jpg" alt="Welcome Image"
-         style="width:250px; margin:15px auto; display:none;">
+    <!-- 🔥 THIS IS WHERE ORACLE WILL RENDER IMAGES -->
+    <div id="imageContainer"></div>
 
     <br><br>
     <button onclick="logout()">Back</button>
   </div>
 </div>
+
 <script>
 function submitForm() {
-  const userId = document.getElementById("userId").value;
+
+  var GITHUB_URL = "https://raw.githubusercontent.com/kavyapulipati/banner-json/refs/heads/main/banner.json";
+
   const productType = document.getElementById("productType").value;
 
-  if (!userId || !productType) {
-    alert("Please fill all fields");
+  if (!productType) {
+    alert("Please select product type");
     return;
   }
 
-  // Store data
-  localStorage.setItem("userId", userId);
-  localStorage.setItem("productType", productType);
+  fetch(GITHUB_URL)
+    .then(res => res.json())
+    .then(data => {
 
-  showWelcome();
+      var banner = data.find(item => item.type === productType);
+
+      var container = document.getElementById("imageContainer"); // ✅ fixed ID
+      container.innerHTML = "";
+
+      if (banner) {
+        var img = document.createElement("img");
+        img.src = banner.image_url;
+        img.style.width = "100%";
+
+        container.appendChild(img);
+      } else {
+        container.innerHTML = "No banner found";
+      }
+
+      // ✅ Move navigation AFTER data loads
+      showWelcome();
+
+    })
+    .catch(err => {
+      console.error("Error fetching JSON:", err);
+    });
+    
 }
 
 function showWelcome() {
-  const userId = localStorage.getItem("userId");
-  const productType = localStorage.getItem("productType");
   document.getElementById("formPage").style.display = "none";
   document.getElementById("welcomePage").style.display = "block";
 
-  document.getElementById("welcomeText").innerText =
-    "Welcome to" + " - Product: " + productType;
-  
-  document.getElementById("welcomeImage").style.display = "block";
+  // Text will be updated by Oracle personalization script
 }
-
 
 // Back button
 function logout() {
   document.getElementById("formPage").style.display = "block";
   document.getElementById("welcomePage").style.display = "none";
-  document.getElementById("welcomeImage").style.display = "none";
+
+  // Clear images
+  const container = document.getElementById("imageContainer");
+  if (container) container.innerHTML = "";
 }
 
-// Auto load if already submitted
+// Auto load
 window.onload = function() {
   if (localStorage.getItem("userId")) {
     showWelcome();
