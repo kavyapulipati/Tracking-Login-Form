@@ -124,43 +124,18 @@
 
 <script>
 function submitForm() {
-
-  var GITHUB_URL = "https://raw.githubusercontent.com/kavyapulipati/banner-json/refs/heads/main/banner.json";
-
+  const userId = document.getElementById("userId").value;
   const productType = document.getElementById("productType").value;
 
-  if (!productType) {
-    alert("Please select product type");
+  if (!userId || !productType) {
+    alert("Please fill all fields");
     return;
   }
 
-  fetch(GITHUB_URL)
-    .then(res => res.json())
-    .then(data => {
+  // Only storing userId (productType handled by Oracle)
+  localStorage.setItem("userId", userId);
 
-      var banner = data.find(item => item.type === productType);
-
-      var container = document.getElementById("imageContainer"); // ✅ fixed ID
-      container.innerHTML = "";
-
-      if (banner) {
-        var img = document.createElement("img");
-        img.src = banner.image_url;
-        img.style.width = "100%";
-
-        container.appendChild(img);
-      } else {
-        container.innerHTML = "No banner found";
-      }
-
-      // ✅ Move navigation AFTER data loads
-      showWelcome();
-
-    })
-    .catch(err => {
-      console.error("Error fetching JSON:", err);
-    });
-    
+  showWelcome();
 }
 
 function showWelcome() {
